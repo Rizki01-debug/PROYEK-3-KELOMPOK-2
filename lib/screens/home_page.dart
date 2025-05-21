@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
-
-import 'notification_page.dart'; // Import halaman notifikasi
-import 'tambah_tanaman_page.dart'; // Import halaman tambah tanaman
-import 'tambah_jadwal_page.dart'; // Import halaman tambah jadwal
+import 'models/tanaman.dart';
+import 'notification_page.dart';
+import 'tambah_tanaman_page.dart';
+import 'tambah_jadwal_page.dart';
 import 'lihat_tanaman_page.dart';
+import 'edit.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final List<Tanaman> daftarTanaman = [
+    Tanaman(
+      nama: 'Lidah Mertua',
+      status: 'Mati',
+      gambarPath: 'assets/images/lb.png',
+      kelembaban: '29%',
+    ),
+    Tanaman(
+      nama: 'Bonsai',
+      status: 'Sehat',
+      gambarPath: 'assets/images/bonsai.png',
+      kelembaban: '45%',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +62,7 @@ class HomePage extends StatelessWidget {
           children: [
             _buildKelembabanCard(),
             const SizedBox(height: 16),
-            _buildTanamanCard(context),
+            ...daftarTanaman.map((tanaman) => _buildTanamanCard(context, tanaman)).toList(),
             const SizedBox(height: 40),
             _buildBottomButtons(context),
           ],
@@ -54,14 +75,14 @@ class HomePage extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 10,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: const Padding(
+        padding: EdgeInsets.all(20),
         child: Row(
-          children: const [
+          children: [
             Icon(Icons.agriculture, size: 40),
             SizedBox(width: 16),
             Text(
-              'Kelembaban Tanah\n28 °C', // <- Ubah °C ke % kalau bicara kelembaban
+              'Kelembaban Tanah\n28 %',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ],
@@ -70,8 +91,9 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTanamanCard(BuildContext context) {
+  Widget _buildTanamanCard(BuildContext context, Tanaman tanaman) {
     return Card(
+      margin: const EdgeInsets.only(bottom: 20),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
       child: Padding(
@@ -82,7 +104,7 @@ class HomePage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
-                'assets/images/kucing7.png',
+                tanaman.gambarPath,
                 width: MediaQuery.of(context).size.width * 0.3,
                 height: MediaQuery.of(context).size.width * 0.3,
                 fit: BoxFit.cover,
@@ -92,13 +114,15 @@ class HomePage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Lidah Mertua',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                Text(
+                  tanaman.nama,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 IconButton(
                   onPressed: () {
-                    // TODO: Tambahkan fungsi hapus tanaman
+                    setState(() {
+                      daftarTanaman.remove(tanaman);
+                    });
                   },
                   icon: const Icon(Icons.delete, color: Colors.red),
                 ),
@@ -109,26 +133,29 @@ class HomePage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.purple,
+                color: tanaman.status == 'Sehat' ? Colors.green : Colors.purple,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text(
-                'Mati',
-                style: TextStyle(color: Colors.white),
+              child: Text(
+                tanaman.status,
+                style: const TextStyle(color: Colors.white),
               ),
             ),
             const SizedBox(height: 10),
             const Text('Aktif saat Kelembaban Tanah'),
-            const Text(
-              '29 °C', // <- Sama, % bukan °C kalau bicara kelembaban
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              tanaman.kelembaban,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Tambahkan fungsi edit tanaman
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EditTanamanPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -145,51 +172,73 @@ class HomePage extends StatelessWidget {
     );
   }
 
-Widget _buildBottomButtons(BuildContext context) {
-  return Column(
-    children: [
-      ElevatedButton(
-        onPressed: () {
-          Navigator.push(
+  Widget _buildBottomButtons(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          _buildMiniButton(
             context,
-            MaterialPageRoute(builder: (context) => const TambahTanamanPage()),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: const Text('Tambah Tanaman'),
-      ),
-      const SizedBox(height: 10),
-      ElevatedButton(
-        onPressed: () {
-          Navigator.push(
+            label: 'Tambah Tanaman',
+            color: Colors.green,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TambahTanamanPage()),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
+          _buildMiniButton(
             context,
-            MaterialPageRoute(builder: (context) => const TambahJadwalPage()),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.cyan,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: const Text('Tambah Jadwal'),
-      ),
-      const SizedBox(height: 10),
-      ElevatedButton(
-        onPressed: () {
-          Navigator.push(
+            label: 'Tambah Jadwal',
+            color: Colors.cyan,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TambahJadwalPage()),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
+          _buildMiniButton(
             context,
-            MaterialPageRoute(builder: (context) => const LihatTanamanPage()),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.indigo,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: const Text('Lihat Tanaman'),
+            label: 'Lihat Tanaman',
+            color: Colors.indigo,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LihatTanamanPage()),
+              );
+            },
+          ),
+        ],
       ),
-    ],
-  );
- }
+    );
+  }
+
+  Widget _buildMiniButton(BuildContext context,
+      {required String label, required Color color, required VoidCallback onPressed}) {
+    return Container(
+      margin: const EdgeInsets.only(right: 10),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          minimumSize: const Size(30, 40),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(fontSize: 12),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
 }

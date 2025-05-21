@@ -14,7 +14,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   final List<Map<String, String>> onboardingData = [
     {
-      "image": "assets/images/kucing7.png", // Pastikan gambar ada di assets
+      "image": "assets/images/depan.png", // Pastikan gambar ada di assets
       "title": "Selamat Datang",
       "desc": "Aplikasi pemantauan tanaman dengan teknologi cerdas."
     },
@@ -24,7 +24,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       "desc": "Pantau kelembaban tanah tanamanmu secara real-time!"
     },
     {
-      "image": "assets/images/automation.png",
+      "image": "assets/images/2.png",
       "title": "Penyiraman Otomatis",
       "desc": "Atur jadwal penyiraman sesuai kebutuhan tanaman."
     },

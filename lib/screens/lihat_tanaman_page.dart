@@ -18,9 +18,9 @@ class LihatTanamanPage extends StatelessWidget {
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
           children: [
-            _buildPlantCard(context, 'Lidah mertua', 'assets/images/lidah_mertua.png'),
-            _buildPlantCard(context, 'Peace lily', 'assets/images/peace_lily.png'),
-            _buildPlantCard(context, 'Kaktus telinga kelinci', 'assets/images/kaktus.png'),
+            _buildPlantCard(context, 'Lidah mertua', 'assets/images/lb.png'),
+            _buildPlantCard(context, 'Peace lily', 'assets/images/plily.png'),
+            _buildPlantCard(context, 'Kaktus telinga kelinci', 'assets/images/dahlia.png'),
             _buildPlantCard(context, 'Bonsai', 'assets/images/bonsai.png'),
           ],
         ),
